@@ -1,3 +1,4 @@
+
 # ============================================================
 # DISCIPLINA: MODELAGEM DE NICHO ECOLÓGICO APLICADA À
 # PRODUÇÃO SUSTENTÁVEL
@@ -8,116 +9,105 @@
 
 # OBJETIVOS
 #
-# 1. Verificar a versão do R instalada no computador.
-# 2. Verificar se o RStudio está sendo utilizado.
-# 3. Instalar os pacotes necessários para as atividades.
-# 4. Carregar e testar os pacotes instalados.
-# 5. Registrar as informações do ambiente computacional.
+# 1. Verificar a versão do R e a utilização do RStudio.
+# 2. Instalar os pacotes utilizados nas atividades da disciplina.
+# 3. Verificar se todos os pacotes foram instalados corretamente.
+# 4. Registrar as versões dos pacotes e informações da sessão.
 #
 # IMPORTANTE
 #
-# Execute este script antes de iniciar os demais exercícios.
-# A instalação dos pacotes é realizada somente quando eles
-# ainda não estão disponíveis no computador.
+# Execute este script antes de iniciar as atividades práticas.
+# Não é necessário reinstalar os pacotes a cada aula.
 #
-# O RStudio é atualizado separadamente do R e dos pacotes.
+# A atualização do R e do RStudio Desktop é realizada
+# separadamente da instalação dos pacotes.
 
 
 # ============================================================
 # 1. VERIFICAÇÃO DO AMBIENTE
 # ============================================================
 
-# Versão do R instalada
+cat("\n========================================\n")
+cat("VERIFICAÇÃO DO AMBIENTE COMPUTACIONAL\n")
+cat("========================================\n")
 
-cat("\nVERSÃO DO R\n")
+# Versão do R
+
+cat("\nVersão do R:\n")
 print(R.version.string)
 
-# Verificamos se o código está sendo executado no RStudio.
+# Verificar se o código está sendo executado no RStudio
 
-cat("\nAMBIENTE DE DESENVOLVIMENTO\n")
+if (Sys.getenv("RSTUDIO") == "1") {
 
-if (rstudioapi::isAvailable()) {
-
-  cat("RStudio detectado.\n")
-
-  versao_rstudio <- RStudio.Version()$version
-
-  cat("Versão do RStudio:", versao_rstudio, "\n")
+  cat("\nRStudio detectado.\n")
 
 } else {
 
-  cat("RStudio não detectado.\n")
-  cat("O código está sendo executado em outro ambiente.\n")
+  cat("\nRStudio não detectado.\n")
 
 }
 
 
 # ============================================================
-# 2. ATUALIZAÇÃO DO RSTUDIO
+# 2. PACOTES NECESSÁRIOS
 # ============================================================
 
-# O RStudio Desktop é um programa independente do R.
-# Portanto, sua atualização não é realizada por install.packages().
-#
-# Para atualizar:
-#
-# 1. Acesse https://posit.co/download/rstudio-desktop/
-# 2. Baixe a versão mais recente do RStudio Desktop.
-# 3. Instale a atualização correspondente ao seu sistema operacional.
-#
-# A atualização do R também é independente e deve ser realizada
-# separadamente, quando necessária.
-
-
-# ============================================================
-# 3. DEFINIÇÃO DOS PACOTES
-# ============================================================
-
-# Os pacotes abaixo foram selecionados considerando as
-# atividades práticas já desenvolvidas e os procedimentos
-# previstos para a disciplina.
+# Lista consolidada dos pacotes utilizados nos exercícios
+# já desenvolvidos e nas atividades previstas.
 
 pacotes <- c(
 
-  # Consulta e obtenção de dados de biodiversidade
+  # Dados de biodiversidade
   "rgbif",
 
-  # Dados espaciais vetoriais e raster
+  # Dados espaciais
   "sf",
   "terra",
   "geobr",
   "geodata",
 
-  # Organização e manipulação de dados
+  # Manipulação e organização de dados
   "tidyverse",
-  "readr",
-  "tibble",
+  "dplyr",
   "tidyr",
+  "tibble",
+  "readr",
+  "janitor",
 
-  # Visualização e mapas
+  # Visualização gráfica
+  "ggplot2",
   "viridis",
-  "viridisLite",
+  "patchwork",
+  "plotly",
   "corrplot",
 
-  # Avaliação e limpeza de coordenadas
+  # Avaliação de coordenadas
   "CoordinateCleaner",
 
-  # Análises estatísticas e multivariadas
+  # Análises estatísticas
   "usdm",
   "factoextra",
+  "pROC",
 
   # Modelagem de distribuição de espécies
-  "maxnet",
-  "pROC"
+  "maxnet"
 
 )
 
 
+# Remover eventuais duplicações
+
+pacotes <- unique(pacotes)
+
+cat("\nTotal de pacotes necessários:", length(pacotes), "\n")
+
+
 # ============================================================
-# 4. IDENTIFICAÇÃO DOS PACOTES AUSENTES
+# 3. IDENTIFICAÇÃO DOS PACOTES AUSENTES
 # ============================================================
 
-# requireNamespace() verifica se o pacote está instalado
+# requireNamespace() verifica se um pacote está instalado
 # sem precisar carregá-lo na sessão.
 
 pacotes_instalados <- vapply(
@@ -127,26 +117,39 @@ pacotes_instalados <- vapply(
   quietly = TRUE
 )
 
-pacotes_ausentes <- pacotes[!pacotes_instalados]
+pacotes_faltantes <- pacotes[!pacotes_instalados]
 
-cat("\nPACOTES NECESSÁRIOS:", length(pacotes), "\n")
-cat("PACOTES JÁ INSTALADOS:", sum(pacotes_instalados), "\n")
-cat("PACOTES AUSENTES:", length(pacotes_ausentes), "\n")
+cat(
+  "\nPacotes já instalados:",
+  sum(pacotes_instalados),
+  "\n"
+)
+
+cat(
+  "Pacotes que precisam ser instalados:",
+  length(pacotes_faltantes),
+  "\n"
+)
 
 
 # ============================================================
-# 5. INSTALAÇÃO DOS PACOTES AUSENTES
+# 4. INSTALAÇÃO DOS PACOTES AUSENTES
 # ============================================================
 
-# Instalamos somente os pacotes que ainda não estão disponíveis.
-# dependencies = TRUE também instala as dependências necessárias.
+# Definir o repositório CRAN.
 
-if (length(pacotes_ausentes) > 0) {
+options(
+  repos = c(CRAN = "https://cloud.r-project.org")
+)
 
-  cat("\nIniciando instalação dos pacotes ausentes...\n")
+# Instalar somente os pacotes ausentes.
+
+if (length(pacotes_faltantes) > 0) {
+
+  cat("\nIniciando a instalação dos pacotes...\n")
 
   install.packages(
-    pacotes_ausentes,
+    pacotes_faltantes,
     dependencies = TRUE
   )
 
@@ -158,10 +161,10 @@ if (length(pacotes_ausentes) > 0) {
 
 
 # ============================================================
-# 6. VERIFICAÇÃO FINAL DAS INSTALAÇÕES
+# 5. VERIFICAÇÃO FINAL
 # ============================================================
 
-# Repetimos a verificação após a instalação.
+# Repetir a verificação após a instalação.
 
 verificacao_final <- vapply(
   pacotes,
@@ -177,16 +180,15 @@ tabela_pacotes <- data.frame(
 
 print(tabela_pacotes)
 
+# Identificar eventuais falhas.
+
 pacotes_com_erro <- pacotes[!verificacao_final]
 
 if (length(pacotes_com_erro) > 0) {
 
-  warning(
-    paste(
-      "Os seguintes pacotes não foram instalados:",
-      paste(pacotes_com_erro, collapse = ", ")
-    )
-  )
+  cat("\nATENÇÃO: alguns pacotes não foram instalados.\n")
+
+  print(pacotes_com_erro)
 
 } else {
 
@@ -196,31 +198,30 @@ if (length(pacotes_com_erro) > 0) {
 
 
 # ============================================================
-# 7. CARREGAMENTO DAS BIBLIOTECAS
+# 6. REGISTRO DAS VERSÕES DOS PACOTES
 # ============================================================
 
-# Carregamos os pacotes disponíveis para a sessão.
-# Os scripts seguintes também poderão carregar individualmente
-# os pacotes utilizados em cada atividade.
+# Registrar as versões efetivamente instaladas.
 
-for (pacote in pacotes) {
+versoes_pacotes <- data.frame(
+  pacote = pacotes[verificacao_final],
+  versao = vapply(
+    pacotes[verificacao_final],
+    function(x) {
+      as.character(packageVersion(x))
+    },
+    character(1)
+  )
+)
 
-  if (requireNamespace(pacote, quietly = TRUE)) {
-
-    suppressPackageStartupMessages(
-      library(pacote, character.only = TRUE)
-    )
-
-  }
-
-}
+print(versoes_pacotes)
 
 
 # ============================================================
-# 8. REGISTRO DAS INFORMAÇÕES DO AMBIENTE
+# 7. EXPORTAÇÃO DAS INFORMAÇÕES
 # ============================================================
 
-# Criamos uma pasta para armazenar o registro da instalação.
+# Criar uma pasta para armazenar os registros do ambiente.
 
 dir_saida <- "preparacao_disciplina"
 
@@ -233,17 +234,7 @@ if (!dir.exists(dir_saida)) {
 
 }
 
-# Salvamos as versões do R, RStudio e dos pacotes.
-
-writeLines(
-  capture.output(sessionInfo()),
-  con = file.path(
-    dir_saida,
-    "informacoes_sessao_R.txt"
-  )
-)
-
-# Exportamos a tabela de verificação dos pacotes.
+# Salvar a tabela de verificação.
 
 write.csv(
   tabela_pacotes,
@@ -254,21 +245,47 @@ write.csv(
   row.names = FALSE
 )
 
+# Salvar as versões dos pacotes.
 
-# ============================================================
-# 9. VALIDAÇÃO FINAL
-# ============================================================
-
-stopifnot(
-  all(verificacao_final)
+write.csv(
+  versoes_pacotes,
+  file.path(
+    dir_saida,
+    "versoes_pacotes.csv"
+  ),
+  row.names = FALSE
 )
 
-cat("\n")
-cat("====================================================\n")
-cat("SCRIPT 00 — PREPARAÇÃO CONCLUÍDA\n")
-cat("====================================================\n")
-cat("Ambiente computacional verificado.\n")
-cat("Pacotes instalados e disponíveis.\n")
-cat("Informações da sessão registradas.\n")
-cat("Os alunos estão preparados para iniciar as atividades.\n")
-cat("====================================================\n")
+# Salvar informações completas da sessão.
+
+writeLines(
+  capture.output(sessionInfo()),
+  file.path(
+    dir_saida,
+    "informacoes_sessao_R.txt"
+  )
+)
+
+
+# ============================================================
+# 8. VALIDAÇÃO FINAL
+# ============================================================
+
+if (all(verificacao_final)) {
+
+  cat("\n========================================\n")
+  cat("SCRIPT 00 — CONCLUÍDO COM SUCESSO\n")
+  cat("========================================\n")
+  cat("Todos os pacotes estão disponíveis.\n")
+  cat("Informações da sessão foram registradas.\n")
+  cat("Ambiente preparado para as atividades.\n")
+  cat("========================================\n")
+
+} else {
+
+  stop(
+    "A instalação não foi concluída. ",
+    "Verifique os pacotes indicados na tabela."
+  )
+
+}
