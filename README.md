@@ -16,6 +16,6 @@ Excelente disciplina a todos :)
 
 ## Resultados
 
-### Adequabilidade ambiental de Spodoptera frugiperda
+### Adequabilidade ambiental de _Spodoptera frugiperda_
 
 ![Mapa de adequabilidade ambiental](Figuras/14_adequabilidade_estados_spodoptera.png)
