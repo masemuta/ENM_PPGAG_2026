@@ -12,3 +12,10 @@ A disciplina acontece entre os dias 16 até 19 de novembro com encontros síncro
 Após a conclusão das aulas teóricas e práticas teremos a entrega de uma avaliação final até o dia 07 de dezembro. A atividade avaliativa será abordada durante a disciplina.
 
 Excelente disciplina a todos :)
+
+
+## Resultados
+
+### Adequabilidade ambiental de Spodoptera frugiperda
+
+![Mapa de adequabilidade ambiental](Figuras/Outputs/13_adequabilidade_binaria_spodoptera.png)
