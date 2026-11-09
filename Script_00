@@ -1,0 +1,275 @@
+
+# ============================================================
+# DISCIPLINA: MODELAGEM DE NICHO ECOLÓGICO APLICADA À
+# PRODUÇÃO SUSTENTÁVEL
+#
+# SCRIPT 00 — PREPARAÇÃO DO AMBIENTE COMPUTACIONAL
+# PPGAG — UTFPR, Campus Pato Branco
+# ============================================================
+
+# OBJETIVOS
+#
+# 1. Verificar a versão do R instalada no computador.
+# 2. Verificar se o RStudio está sendo utilizado.
+# 3. Instalar os pacotes necessários para as atividades.
+# 4. Carregar e testar os pacotes instalados.
+# 5. Registrar as informações do ambiente computacional.
+#
+# IMPORTANTE
+#
+# Execute este script antes de iniciar os demais exercícios.
+# A instalação dos pacotes é realizada somente quando eles
+# ainda não estão disponíveis no computador.
+#
+# O RStudio é atualizado separadamente do R e dos pacotes.
+
+
+# ============================================================
+# 1. VERIFICAÇÃO DO AMBIENTE
+# ============================================================
+
+# Versão do R instalada
+
+cat("\nVERSÃO DO R\n")
+print(R.version.string)
+
+# Verificamos se o código está sendo executado no RStudio.
+
+cat("\nAMBIENTE DE DESENVOLVIMENTO\n")
+
+if (rstudioapi::isAvailable()) {
+
+  cat("RStudio detectado.\n")
+
+  versao_rstudio <- RStudio.Version()$version
+
+  cat("Versão do RStudio:", versao_rstudio, "\n")
+
+} else {
+
+  cat("RStudio não detectado.\n")
+  cat("O código está sendo executado em outro ambiente.\n")
+
+}
+
+
+# ============================================================
+# 2. ATUALIZAÇÃO DO RSTUDIO
+# ============================================================
+
+# O RStudio Desktop é um programa independente do R.
+# Portanto, sua atualização não é realizada por install.packages().
+#
+# Para atualizar:
+#
+# 1. Acesse https://posit.co/download/rstudio-desktop/
+# 2. Baixe a versão mais recente do RStudio Desktop.
+# 3. Instale a atualização correspondente ao seu sistema operacional.
+#
+# A atualização do R também é independente e deve ser realizada
+# separadamente, quando necessária.
+
+
+# ============================================================
+# 3. DEFINIÇÃO DOS PACOTES
+# ============================================================
+
+# Os pacotes abaixo foram selecionados considerando as
+# atividades práticas já desenvolvidas e os procedimentos
+# previstos para a disciplina.
+
+pacotes <- c(
+
+  # Consulta e obtenção de dados de biodiversidade
+  "rgbif",
+
+  # Dados espaciais vetoriais e raster
+  "sf",
+  "terra",
+  "geobr",
+  "geodata",
+
+  # Organização e manipulação de dados
+  "tidyverse",
+  "readr",
+  "tibble",
+  "tidyr",
+
+  # Visualização e mapas
+  "viridis",
+  "viridisLite",
+  "corrplot",
+
+  # Avaliação e limpeza de coordenadas
+  "CoordinateCleaner",
+
+  # Análises estatísticas e multivariadas
+  "usdm",
+  "factoextra",
+
+  # Modelagem de distribuição de espécies
+  "maxnet",
+  "pROC"
+
+)
+
+
+# ============================================================
+# 4. IDENTIFICAÇÃO DOS PACOTES AUSENTES
+# ============================================================
+
+# requireNamespace() verifica se o pacote está instalado
+# sem precisar carregá-lo na sessão.
+
+pacotes_instalados <- vapply(
+  pacotes,
+  requireNamespace,
+  logical(1),
+  quietly = TRUE
+)
+
+pacotes_ausentes <- pacotes[!pacotes_instalados]
+
+cat("\nPACOTES NECESSÁRIOS:", length(pacotes), "\n")
+cat("PACOTES JÁ INSTALADOS:", sum(pacotes_instalados), "\n")
+cat("PACOTES AUSENTES:", length(pacotes_ausentes), "\n")
+
+
+# ============================================================
+# 5. INSTALAÇÃO DOS PACOTES AUSENTES
+# ============================================================
+
+# Instalamos somente os pacotes que ainda não estão disponíveis.
+# dependencies = TRUE também instala as dependências necessárias.
+
+if (length(pacotes_ausentes) > 0) {
+
+  cat("\nIniciando instalação dos pacotes ausentes...\n")
+
+  install.packages(
+    pacotes_ausentes,
+    dependencies = TRUE
+  )
+
+} else {
+
+  cat("\nTodos os pacotes já estão instalados.\n")
+
+}
+
+
+# ============================================================
+# 6. VERIFICAÇÃO FINAL DAS INSTALAÇÕES
+# ============================================================
+
+# Repetimos a verificação após a instalação.
+
+verificacao_final <- vapply(
+  pacotes,
+  requireNamespace,
+  logical(1),
+  quietly = TRUE
+)
+
+tabela_pacotes <- data.frame(
+  pacote = pacotes,
+  instalado = verificacao_final
+)
+
+print(tabela_pacotes)
+
+pacotes_com_erro <- pacotes[!verificacao_final]
+
+if (length(pacotes_com_erro) > 0) {
+
+  warning(
+    paste(
+      "Os seguintes pacotes não foram instalados:",
+      paste(pacotes_com_erro, collapse = ", ")
+    )
+  )
+
+} else {
+
+  cat("\nTodos os pacotes foram instalados corretamente.\n")
+
+}
+
+
+# ============================================================
+# 7. CARREGAMENTO DAS BIBLIOTECAS
+# ============================================================
+
+# Carregamos os pacotes disponíveis para a sessão.
+# Os scripts seguintes também poderão carregar individualmente
+# os pacotes utilizados em cada atividade.
+
+for (pacote in pacotes) {
+
+  if (requireNamespace(pacote, quietly = TRUE)) {
+
+    suppressPackageStartupMessages(
+      library(pacote, character.only = TRUE)
+    )
+
+  }
+
+}
+
+
+# ============================================================
+# 8. REGISTRO DAS INFORMAÇÕES DO AMBIENTE
+# ============================================================
+
+# Criamos uma pasta para armazenar o registro da instalação.
+
+dir_saida <- "preparacao_disciplina"
+
+if (!dir.exists(dir_saida)) {
+
+  dir.create(
+    dir_saida,
+    recursive = TRUE
+  )
+
+}
+
+# Salvamos as versões do R, RStudio e dos pacotes.
+
+writeLines(
+  capture.output(sessionInfo()),
+  con = file.path(
+    dir_saida,
+    "informacoes_sessao_R.txt"
+  )
+)
+
+# Exportamos a tabela de verificação dos pacotes.
+
+write.csv(
+  tabela_pacotes,
+  file.path(
+    dir_saida,
+    "verificacao_pacotes.csv"
+  ),
+  row.names = FALSE
+)
+
+
+# ============================================================
+# 9. VALIDAÇÃO FINAL
+# ============================================================
+
+stopifnot(
+  all(verificacao_final)
+)
+
+cat("\n")
+cat("====================================================\n")
+cat("SCRIPT 00 — PREPARAÇÃO CONCLUÍDA\n")
+cat("====================================================\n")
+cat("Ambiente computacional verificado.\n")
+cat("Pacotes instalados e disponíveis.\n")
+cat("Informações da sessão registradas.\n")
+cat("Os alunos estão preparados para iniciar as atividades.\n")
+cat("====================================================\n")
