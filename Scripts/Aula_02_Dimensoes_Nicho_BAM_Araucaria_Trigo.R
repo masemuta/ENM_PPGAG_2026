@@ -85,7 +85,7 @@ matriz_bam <- tibble::tribble(
   "Transporte de sementes; introdução por ação humana; disponibilidade de sementes"
 )
 print(matriz_bam)
-readr::write_csv(matriz_bam, "resultados_aula02/matriz_conceitual_BAM.csv")
+readr::write_csv(matriz_bam, "./Aula_02/resultados_aula02/matriz_conceitual_BAM.csv")
 
 
 # 4. DIMENSÃO ANTROPOGÊNICA E DE MANEJO ---------------------------------------
@@ -109,7 +109,7 @@ manejo_humano <- tibble::tribble(
   "Preço; custo de produção; disponibilidade de crédito; demanda de mercado"
 )
 print(manejo_humano)
-readr::write_csv(manejo_humano, "resultados_aula02/dimensao_antropogenica_manejo.csv")
+readr::write_csv(manejo_humano, "./Aula_02/resultados_aula02/dimensao_antropogenica_manejo.csv")
 
 
 
